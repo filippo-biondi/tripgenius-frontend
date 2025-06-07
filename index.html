@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ AI Trip Planner Demo ✨</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+      :root {
+          --primary-color: #5E5CE6;
+          --secondary-color: #00C6A0;
+          --accent-color: #FF9F0A;
+          --background-color: #F2F2F7;
+          --surface-color: #FFFFFF;
+          --text-color: #1C1C1E;
+          --text-light-color: #8A8A8E;
+          --border-color: #E5E5EA;
+          --font-family: 'Poppins', sans-serif;
+      }
+
+      * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+      }
+
+      body {
+          font-family: var(--font-family);
+          background-color: var(--background-color);
+          color: var(--text-color);
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+          padding: 20px;
+      }
+
+      #app {
+          width: 100%;
+          max-width: 900px;
+      }
+
+      .app-container {
+          background-color: var(--surface-color);
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+          display: flex;
+          flex-direction: column;
+          gap: 30px;
+      }
+
+      .app-header {
+          text-align: center;
+      }
+
+      .app-header h1 {
+          font-size: 2.5em;
+          font-weight: 700;
+          color: var(--primary-color);
+          margin-bottom: 5px;
+      }
+      .app-header h1 .icon {
+          font-size: 0.9em;
+          margin-right: 10px;
+      }
+
+      .app-header p {
+          font-size: 1.1em;
+          color: var(--text-light-color);
+      }
+
+      .main-content {
+          display: flex;
+          gap: 30px;
+      }
+
+      .mockup-sidebar {
+          flex: 0 0 250px;
+          padding: 20px;
+          background-color: #F9F9F9;
+          border-radius: 12px;
+          border: 1px solid var(--border-color);
+      }
+
+      .mockup-sidebar h3 {
+          font-size: 1.2em;
+          color: var(--primary-color);
+          margin-top: 0;
+          margin-bottom: 15px;
+          border-bottom: 2px solid var(--secondary-color);
+          padding-bottom: 8px;
+      }
+      .mockup-sidebar h3:not(:first-child) {
+          margin-top: 25px;
+      }
+
+
+      .mockup-item-list {
+          list-style: none;
+      }
+
+      .mockup-item-list li {
+          background-color: var(--surface-color);
+          padding: 10px 15px;
+          margin-bottom: 10px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
+      }
+      .mockup-item-list li:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          color: var(--secondary-color);
+      }
+      .mockup-item-list li .icon {
+          margin-right: 8px;
+          color: var(--accent-color);
+      }
+      .mockup-item-list li small {
+          display: block;
+          font-size: 0.8em;
+          color: var(--text-light-color);
+          margin-top: 3px;
+          font-weight: 400;
+      }
+
+
+      .travel-styles .style-tag {
+          display: inline-block;
+          background-color: var(--accent-color);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 0.9em;
+          margin-right: 8px;
+          margin-bottom: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+      .travel-styles .style-tag:hover {
+          background-color: #FFB340;
+          transform: translateY(-2px);
+      }
+
+      /* --- NEW: Selected State for Toggles --- */
+      .mockup-item-list li.selected,
+      .travel-styles .style-tag.selected {
+          background: var(--primary-color);
+          color: white;
+          box-shadow: 0 4px 12px rgba(94, 92, 230, 0.4);
+          transform: translateY(-2px);
+      }
+      .mockup-item-list li.selected .icon,
+      .mockup-item-list li.selected small {
+          color: white; /* Make text inside selected item readable */
+      }
+      .mockup-item-list li.selected:hover,
+      .travel-styles .style-tag.selected:hover {
+          background: #7E7CEB; /* Lighter primary color on hover */
+      }
+
+
+      .content-area { /* Replaces chat-interface for dynamic content */
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+      }
+
+      /* Chat Interface Specific Styles */
+      .chat-interface #chatbox { /* Ensure ID specificity if needed */
+          height: 450px;
+          border: 1px solid var(--border-color);
+          overflow-y: auto;
+          padding: 15px;
+          margin-bottom: 20px;
+          background-color: #FDFDFD;
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+      }
+
+      .message {
+          padding: 12px 18px;
+          border-radius: 18px;
+          max-width: 80%;
+          word-wrap: break-word;
+          line-height: 1.5;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+          animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+
+      .message p {
+          white-space: pre-wrap;
+      }
+      .message p strong {
+          color: var(--primary-color);
+      }
+      .message p em {
+          color: var(--secondary-color);
+      }
+
+
+      .user-message {
+          background: linear-gradient(135deg, var(--primary-color), #7E7CEB);
+          color: white;
+          align-self: flex-end;
+          border-bottom-right-radius: 5px;
+      }
+
+      .bot-message {
+          background-color: #E9E9EB;
+          color: var(--text-color);
+          align-self: flex-start;
+          border-bottom-left-radius: 5px;
+      }
+      .user-message .icon, .bot-message .icon {
+          margin-right: 8px;
+          font-size: 1.1em;
+          vertical-align: middle;
+      }
+
+
+      .chat-interface #input-area { /* ID specificity */
+          display: flex;
+          gap: 10px;
+          align-items: flex-end;
+      }
+
+      .chat-interface #userInput { /* ID specificity */
+          flex-grow: 1;
+          padding: 12px 15px;
+          border: 1px solid var(--border-color);
+          border-radius: 25px;
+          resize: none;
+          font-family: inherit;
+          font-size: 1em;
+          line-height: 1.4;
+          transition: box-shadow 0.2s ease;
+          min-height: 50px;
+      }
+      .chat-interface #userInput:focus { /* ID specificity */
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(94, 92, 230, 0.2);
+      }
+
+
+      .chat-interface #sendButton { /* ID specificity */
+          background-color: var(--secondary-color);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.3em;
+          width: 50px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.2s ease, transform 0.1s ease;
+          flex-shrink: 0;
+      }
+
+      .chat-interface #sendButton:hover { background-color: #00A580; }
+      .chat-interface #sendButton:active { transform: scale(0.95); }
+      .chat-interface #sendButton:disabled { background-color: #BDBDBD; cursor: not-allowed;}
+
+      .status-indicators {
+          min-height: 25px;
+          text-align: center;
+          margin-top: 10px;
+      }
+
+      .loading-animation { /* Shared by chat and potentially detail pages */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.9em;
+          color: var(--text-light-color);
+      }
+      .loading-animation .dot {
+          width: 8px; height: 8px; margin: 0 3px;
+          background-color: var(--primary-color); border-radius: 50%;
+          display: inline-block; animation: bounce 1.4s infinite ease-in-out both;
+      }
+      .loading-animation .dot:nth-child(1) { animation-delay: -0.32s; }
+      .loading-animation .dot:nth-child(2) { animation-delay: -0.16s; }
+
+      @keyframes bounce { 0%, 80%, 100% { transform: scale(1.0); } 40% { transform: scale(1.0); }}
+
+      .error-text { color: #FF3B30; font-weight: 600; font-size: 0.9em; }
+
+      /* Styles for Detail Page Views */
+      .detail-page-view {
+          padding: 10px;
+          background-color: var(--surface-color);
+          border-radius: 12px;
+          height: 100%;
+          overflow-y: auto;
+      }
+
+      .detail-page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+          border-bottom: 1px solid var(--border-color);
+      }
+
+      .detail-page-header h2 {
+          color: var(--primary-color);
+          font-size: 1.8em;
+          font-weight: 600;
+      }
+      .detail-page-header .icon {
+          font-size: 1.5em;
+          margin-right: 10px;
+          color: var(--accent-color);
+      }
+
+      .back-button {
+          background-color: var(--secondary-color);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 20px;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 0.9em;
+          transition: background-color 0.2s ease;
+      }
+      .back-button:hover {
+          background-color: #00A580;
+      }
+
+      .detail-card {
+          background-color: #F9F9F9;
+          padding: 20px;
+          border-radius: 10px;
+          margin-bottom: 20px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+      }
+      .detail-card h4 {
+          color: var(--primary-color);
+          margin-top: 0;
+          margin-bottom: 10px;
+          font-size: 1.1em;
+      }
+      .detail-card p, .detail-card ul {
+          font-size: 0.95em;
+          line-height: 1.6;
+          color: var(--text-color);
+      }
+      .detail-card ul {
+          list-style: disc;
+          padding-left: 20px;
+      }
+
+      /* --- Responsive Adjustments --- */
+      @media (max-width: 768px) {
+          body { padding: 10px; }
+          .app-container { padding: 20px 15px; gap: 20px; }
+          .main-content { flex-direction: column; gap: 20px; }
+          .mockup-sidebar { flex: 0 0 auto; width: 100%; padding: 15px; }
+          .app-header h1 { font-size: 2em; }
+          .app-header p { font-size: 1em; }
+          .chat-interface #chatbox { height: 320px; }
+      }
+      @media (max-width: 480px) {
+          .app-container { padding: 15px 10px; }
+          .app-header h1 { font-size: 1.7em; }
+          .app-header p { font-size: 0.9em; }
+          .chat-interface #chatbox { height: 280px; }
+      }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="app-container">
+    <header class="app-header">
+      <h1><span class="icon">✈️</span>AI Trip Planner</h1>
+      <p>Crafting your perfect getaway, one adventure at a time!</p>
+    </header>
+
+    <div class="main-content">
+      <aside class="mockup-sidebar">
+        <h3><span class="icon">💡</span>Get Inspired (Toggle)</h3>
+        <ul class="mockup-item-list">
+          <li v-for="dest in destinations" :key="dest.name"
+              @click="toggleCitySelection(dest.name)"
+              :class="{ 'selected': isCitySelected(dest.name) }">
+            <span class="icon">{{ dest.icon }}</span>{{ dest.name }}
+          </li>
+        </ul>
+
+        <h3><span class="icon">🏷️</span>Travel Styles (Toggle)</h3>
+        <div class="travel-styles">
+          <span v-for="style in travelStyles" :key="style.name"
+                class="style-tag"
+                @click="toggleStyleSelection(style.name)"
+                :class="{ 'selected': isStyleSelected(style.name) }">
+            {{ style.name }}
+          </span>
+        </div>
+
+        <h3><span class="icon">🗺️</span>Popular Itineraries</h3>
+        <ul class="mockup-item-list">
+          <li @click="showDetail('itinerary', { name: '7 Days in Italy', icon: '🇮🇹', duration: '7 days', budget: 'Moderate to High' })">
+            <span class="icon">🇮🇹</span>7 Days in Italy
+          </li>
+          <li @click="showDetail('itinerary', { name: 'SE Asia Backpacking', icon: '🇹🇭', duration: '3-4 Weeks', budget: 'Budget-Friendly' })">
+            <span class="icon">🇹🇭</span>SE Asia Backpacking
+          </li>
+        </ul>
+
+        <h3><span class="icon">🌟</span>Community Picks</h3>
+        <ul class="mockup-item-list">
+          <li @click="showDetail('community', { name: 'Coastal California Roadtrip', icon: '🚗', submittedBy: 'Alex P.', rating: 4.5 })">
+            <span class="icon">🚗</span>Coastal California Roadtrip <small>- by Alex P.</small>
+          </li>
+          <li @click="showDetail('community', { name: 'Swiss Alps Adventure', icon: '⛰️', submittedBy: 'TravelCommunity', rating: 5 })">
+            <span class="icon">⛰️</span>Swiss Alps Adventure <small>- Inspired by 15 trips</small>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="content-area">
+        <!-- Chat Interface -->
+        <div v-if="currentView === 'chat'" class="chat-interface">
+          <div id="chatbox" ref="chatboxEl">
+            <div v-for="(message, index) in displayMessages" :key="index"
+                 :class="['message', message.sender === 'user' ? 'user-message' : 'bot-message']">
+              <p><span v-if="message.sender === 'user'" class="icon" style="display: inline-block; margin-right: 5px;">👤</span>
+                <span v-if="message.sender === 'bot'" class="icon" style="display: inline-block; margin-right: 5px;">🤖</span>
+                <span v-html="formatMessage(message.text)"></span>
+              </p>
+            </div>
+          </div>
+          <div id="input-area">
+            <textarea id="userInput" placeholder="Describe your dream trip..."
+                      v-model="userInput" @keypress.enter.prevent="handleEnter"
+                      :disabled="isLoading" rows="1"></textarea>
+            <button id="sendButton" @click="processUserMessage" :disabled="isLoading || (!userInput.trim() && selectedCities.length === 0 && selectedStyles.length === 0)">
+              <span>➤</span>
+            </button>
+          </div>
+          <div class="status-indicators">
+            <div v-if="isLoading" class="loading-animation">
+              Crafting your plan
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <div v-if="errorMessage" class="error-text">{{ errorMessage }}</div>
+          </div>
+        </div>
+
+        <!-- Detail Page Views -->
+        <div v-if="currentView !== 'chat'" class="detail-page-view">
+          <div v-if="selectedItem">
+            <div class="detail-page-header">
+              <h2><span class="icon">{{ selectedItem.icon }}</span>{{ selectedItem.name }}</h2>
+              <button class="back-button" @click="goBackToChat">← Back to Chat</button>
+            </div>
+            <div v-if="currentView === 'itineraryDetails'" class="detail-card">
+              <h4>Overview</h4>
+              <p><strong>Duration:</strong> {{ selectedItem.duration }}</p>
+              <p><strong>Budget:</strong> {{ selectedItem.budget }}</p>
+            </div>
+            <div v-if="currentView === 'communityDetails'" class="detail-card">
+              <h4>Trip Highlights</h4>
+              <p>Submitted by: <strong>{{ selectedItem.submittedBy }}</strong></p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const { createApp, ref, reactive, nextTick, onMounted } = Vue;
+
+  const API_URL = 'http://131.114.50.31:5000/process';
+
+  createApp({
+    setup() {
+      const userInput = ref('');
+      const isLoading = ref(false);
+      const errorMessage = ref('');
+      const chatboxEl = ref(null);
+
+      const selectedCities = ref([]);
+      const selectedStyles = ref([]);
+
+      const destinations = ref([
+        { name: 'Paris, France', icon: '🗼' },
+        { name: 'Kyoto, Japan', icon: '🏯' },
+        { name: 'Banff, Canada', icon: '🏞️' },
+        { name: 'Bali, Indonesia', icon: '🏖️' }
+      ]);
+      const travelStyles = ref([
+        { name: 'Adventure', icon: '🧗' },
+        { name: 'Relaxation', icon: '🧘' },
+        { name: 'Cultural', icon: '🏛️' },
+        { name: 'Budget', icon: '💰' },
+        { name: 'Luxury', icon: '💎' },
+      ]);
+
+      const initialBotMessage = "Hello! I'm your AI Trip Planner 🤖. Select some preferences on the left or just tell me about your dream trip!";
+      const displayMessages = reactive([{ text: initialBotMessage, sender: 'bot' }]);
+
+      // *** FIX ***: Use ref for the history array, which is a common pattern for arrays in Composition API.
+      const conversationHistory = ref([initialBotMessage]);
+
+      const currentView = ref('chat');
+      const selectedItem = ref(null);
+
+      const scrollToBottom = () => {
+        nextTick(() => {
+          if (chatboxEl.value) {
+            chatboxEl.value.scrollTop = chatboxEl.value.scrollHeight;
+          }
+        });
+      };
+
+      const addMessageToDisplay = (text, sender) => {
+        displayMessages.push({ text, sender });
+        scrollToBottom();
+      };
+
+      const formatMessage = (text) => {
+        if (typeof text !== 'string') return '';
+        return text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/\n/g, '<br>');
+      };
+
+      const processUserMessage = async () => {
+        const messageText = userInput.value.trim();
+        // Allow sending if there's text OR if selections have been made
+        if ((!messageText && selectedCities.value.length === 0 && selectedStyles.value.length === 0) || isLoading.value) return;
+
+        // If the user sends a message, add it to the display and history
+        if (messageText) {
+          addMessageToDisplay(messageText, 'user');
+          conversationHistory.value.push(messageText);
+        }
+
+        userInput.value = '';
+        isLoading.value = true;
+        errorMessage.value = '';
+
+        autoResizeTextarea({ target: document.getElementById('userInput') });
+        console.log("sending request");
+        try {
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // *** THE MAIN FIX IS HERE ***
+            // We pass the .value of the refs, not the ref objects themselves.
+            body: JSON.stringify({
+              messages: conversationHistory.value, // Pass the array from the ref
+              cities: selectedCities.value,      // Pass the array from the ref
+              tags: selectedStyles.value,        // Pass the array from the ref
+            }),
+          });
+
+          console.log(response);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            // Use a more generic error message if the backend doesn't provide one
+            throw new Error(errorData.detail || errorData.error || `API Error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log(data);
+          // Assuming the backend responds with a field named "response" containing the text
+          const botResponseText = data.response || "Sorry, I couldn't get a response.";
+
+          addMessageToDisplay(botResponseText, 'bot');
+          conversationHistory.value.push(botResponseText);
+
+        } catch (error) {
+          console.error('API Request Error:', error);
+          errorMessage.value = error.message;
+        } finally {
+          isLoading.value = false;
+          scrollToBottom();
+          document.getElementById('userInput')?.focus();
+        }
+      };
+
+      const toggleCitySelection = (cityName) => {
+        const index = selectedCities.value.indexOf(cityName);
+        if (index > -1) {
+          selectedCities.value.splice(index, 1);
+        } else {
+          selectedCities.value.push(cityName);
+        }
+      };
+      const isCitySelected = (cityName) => selectedCities.value.includes(cityName);
+
+      const toggleStyleSelection = (styleName) => {
+        const index = selectedStyles.value.indexOf(styleName);
+        if (index > -1) {
+          selectedStyles.value.splice(index, 1);
+        } else {
+          selectedStyles.value.push(styleName);
+        }
+      };
+      const isStyleSelected = (styleName) => selectedStyles.value.includes(styleName);
+
+      const handleEnter = (event) => {
+        if (!event.shiftKey) {
+          event.preventDefault();
+          processUserMessage();
+        }
+      };
+
+      const autoResizeTextarea = (event) => {
+        const textarea = event.target;
+        textarea.style.height = 'auto'; // Reset height
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      };
+
+      const showDetail = (viewType, itemData) => {
+        selectedItem.value = itemData;
+        currentView.value = `${viewType}Details`;
+      };
+
+      const goBackToChat = () => {
+        currentView.value = 'chat';
+        selectedItem.value = null;
+        nextTick(() => {
+          scrollToBottom();
+          document.getElementById('userInput')?.focus();
+        });
+      };
+
+      onMounted(() => {
+        scrollToBottom();
+        const textarea = document.getElementById('userInput');
+        if (textarea) {
+          textarea.addEventListener('input', autoResizeTextarea);
+          textarea.focus();
+        }
+      });
+
+      return {
+        userInput, isLoading, errorMessage, displayMessages, chatboxEl,
+        processUserMessage, handleEnter, formatMessage,
+        destinations, travelStyles,
+        selectedCities, // Expose for the send button logic
+        selectedStyles, // Expose for the send button logic
+        toggleCitySelection, isCitySelected,
+        toggleStyleSelection, isStyleSelected,
+        currentView, selectedItem, showDetail, goBackToChat
+      };
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>
