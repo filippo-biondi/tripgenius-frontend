@@ -272,8 +272,8 @@
             headers: { 'Content-Type': 'application/json' },
             // --- MODIFICATO: Aggiunto il session_id al corpo della richiesta ---
             body: JSON.stringify({
-              session_id: userSessionId, // Invia l'ID della sessione al backend
-              messages: conversationHistory.value[-1],
+              session_id: userSessionId,
+              message: conversationHistory.value[-1],
               cities: finalCities,
               tags: finalTags,
             }),
