@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TripGenius - Demo</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
       /* All your existing CSS styles remain the same... */
@@ -159,9 +160,9 @@
   // Legge la URL dell'API dal blocco di configurazione globale
   // Fornisce un fallback per il testing locale se il placeholder non è stato sostituito
   const apiUrlFromConfig = window.__APP_CONFIG__?.API_URL;
-  const API_URL = (apiUrlFromConfig && apiUrlFromConfig !== '__API_URL__')
+  const API_URL = 'http://' + ((apiUrlFromConfig && apiUrlFromConfig !== '__API_URL__')
     ? `${apiUrlFromConfig}/process`
-    : 'http://127.0.0.1:12000/process'; // Fallback per lo sviluppo locale
+    : '127.0.0.1:12000/process'); // Fallback per lo sviluppo locale
 
   createApp({
     setup() {
