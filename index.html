@@ -125,7 +125,6 @@
           margin-top: 25px;
       }
 
-      /* --- MODIFICA QUI --- */
       .mockup-item-list {
           list-style-type: none; /* Rimuove i pallini/punti elenco */
       }
@@ -203,7 +202,6 @@
 
       #chatbox {
           height: 400px;
-          /* Altezza ridotta per fare spazio ai nuovi input */
           border: 1px solid var(--border-color);
           overflow-y: auto;
           padding: 20px;
@@ -321,7 +319,6 @@
           color: var(--primary-color);
       }
 
-      /* --- NUOVO: Stili per i box di testo aggiuntivi --- */
       .additional-inputs {
           display: flex;
           gap: 20px;
@@ -416,6 +413,46 @@
       .loading-animation .dot {
           background-color: var(--primary-color);
       }
+
+      /* --- NUOVO: OTTIMIZZAZIONI PER MOBILE --- */
+      @media (max-width: 850px) {
+          body {
+              padding: 10px;
+          }
+
+          .app-container {
+              padding: 15px;
+              gap: 20px;
+          }
+
+          .app-header h1 {
+              font-size: 2.2em; /* Titolo più piccolo su mobile */
+          }
+
+          .app-header p {
+              font-size: 1em;
+          }
+
+          .main-content {
+              flex-direction: column; /* Impila la sidebar e il contenuto */
+              gap: 20px;
+          }
+
+          .mockup-sidebar {
+              flex: 1 1 auto; /* Permette alla sidebar di occupare la larghezza */
+              width: 100%;
+          }
+
+          #chatbox {
+              height: 350px; /* Riduce l'altezza per schermi più piccoli */
+              padding: 15px;
+          }
+
+          .additional-inputs {
+              flex-direction: column; /* Impila anche i box di input aggiuntivi */
+              gap: 15px;
+          }
+      }
   </style>
 </head>
 
@@ -423,7 +460,7 @@
 <div id="app">
   <div class="app-container">
     <header class="app-header">
-      <h1><span class="icon">🎨</span>TripGenius</h1>
+      <h1><span class="icon">🗺️</span>TripGenius</h1>
       <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
     </header>
 
@@ -507,7 +544,6 @@
       const errorMessage = ref('');
       const chatboxEl = ref(null);
 
-      // --- NUOVO: Variabili per i box di testo personalizzati ---
       const customCitiesInput = ref('');
       const customTagsInput = ref('');
 
@@ -535,7 +571,6 @@
       const displayMessages = reactive([initialBotMessage]);
       const conversationHistory = ref([initialBotMessage.text]);
 
-      // --- MODIFICATO: canSendMessage ora controlla tutti gli input ---
       const canSendMessage = computed(() => {
         return userInput.value.trim().length > 0 ||
           selectedCities.value.length > 0 ||
@@ -565,22 +600,18 @@
         return false;
       };
 
-      // --- MODIFICATO: La funzione principale ora gestisce tutti gli input ---
       const processUserMessage = async () => {
         const messageText = userInput.value.trim();
         if (!canSendMessage.value || isLoading.value) return;
 
-        // --- NUOVO: Legge e processa i valori dai nuovi box di testo ---
         const customCities = customCitiesInput.value.trim().split(',').map(c => c.trim()).filter(c => c);
         const customTags = customTagsInput.value.trim().split(',').map(t => t.trim()).filter(t => t);
 
-        // Combina e rimuove duplicati
         const finalCities = [...new Set([...selectedCities.value, ...customCities])];
         const finalTags = [...new Set([...selectedStyles.value, ...customTags])];
 
         let userQueryText = messageText;
 
-        // Se non c'è testo nel box principale, crea un messaggio di contesto per l'utente
         if (!userQueryText && (finalCities.length > 0 || finalTags.length > 0)) {
           let contextParts = [];
           if (finalCities.length > 0) contextParts.push(`città: ${finalCities.join(', ')}`);
@@ -591,7 +622,7 @@
         addMessageToDisplay({ text: userQueryText, sender: 'user' });
         conversationHistory.value.push(userQueryText);
 
-        userInput.value = ''; // Pulisce solo il box principale
+        userInput.value = '';
         isLoading.value = true;
         errorMessage.value = '';
         autoResizeTextarea({ target: document.getElementById('userInput') });
@@ -602,8 +633,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               messages: conversationHistory.value,
-              cities: finalCities, // Invia i dati combinati
-              tags: finalTags,     // Invia i dati combinati
+              cities: finalCities,
+              tags: finalTags,
             }),
           });
 
@@ -624,7 +655,6 @@
 
           conversationHistory.value.push(botResponseText);
 
-          // --- NUOVO: Pulisce tutti gli input dopo l'invio ---
           selectedCities.value = [];
           selectedStyles.value = [];
           customCitiesInput.value = '';
@@ -679,19 +709,16 @@
       };
 
       onMounted(() => {
-        // Aggiunto il render della chat iniziale qui per coerenza
         const chatboxContainer = document.getElementById('chatbox');
         const renderVueMessages = () => {
-          chatboxContainer.innerHTML = ''; // Pulisce
+          chatboxContainer.innerHTML = '';
           displayMessages.forEach(message => {
-            // Questo è un trucco, normalmente useresti componenti Vue
-            // per renderizzare, ma per questo esempio dinamico funziona.
             let messageEl;
             if (message.sender === 'user') {
               messageEl = document.createElement('div');
               messageEl.className = 'message user-message';
               messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
-            } else { // bot
+            } else {
               messageEl = document.createElement('div');
               messageEl.className = 'message bot-message';
               messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
@@ -700,16 +727,20 @@
           });
           scrollToBottom();
         };
-        renderVueMessages(); // Render iniziale
+        renderVueMessages();
 
         const textarea = document.getElementById('userInput');
         if (textarea) {
           textarea.addEventListener('input', autoResizeTextarea);
-          textarea.focus();
+          // --- MODIFICA PER MOBILE UX ---
+          // Evita di far apparire subito la tastiera su mobile, che può coprire il contenuto.
+          // L'utente può tappare sull'input per attivarlo.
+          if (window.innerWidth > 850) {
+            textarea.focus();
+          }
         }
       });
 
-      // Modificato per esporre le nuove variabili
       return {
         userInput, isLoading, errorMessage, displayMessages, chatboxEl,
         processUserMessage, handleEnter, formatMessage, canSendMessage,
@@ -717,7 +748,7 @@
         toggleCitySelection, isCitySelected,
         toggleStyleSelection, isStyleSelected,
         generatePredefinedTrip,
-        customCitiesInput, customTagsInput // Esponi le nuove variabili
+        customCitiesInput, customTagsInput
       };
     }
   }).mount('#app');
