@@ -126,7 +126,8 @@
       }
 
       .mockup-item-list {
-          list-style-type: none; /* Rimuove i pallini/punti elenco */
+          list-style-type: none;
+          /* Rimuove i pallini/punti elenco */
       }
 
       .mockup-item-list li {
@@ -414,7 +415,7 @@
           background-color: var(--primary-color);
       }
 
-      /* --- NUOVO: OTTIMIZZAZIONI PER MOBILE --- */
+      /* --- OTTIMIZZAZIONI PER MOBILE --- */
       @media (max-width: 850px) {
           body {
               padding: 10px;
@@ -426,7 +427,8 @@
           }
 
           .app-header h1 {
-              font-size: 2.2em; /* Titolo più piccolo su mobile */
+              font-size: 2.2em;
+              /* Titolo più piccolo su mobile */
           }
 
           .app-header p {
@@ -434,22 +436,26 @@
           }
 
           .main-content {
-              flex-direction: column; /* Impila la sidebar e il contenuto */
+              flex-direction: column;
+              /* Impila la sidebar e il contenuto */
               gap: 20px;
           }
 
           .mockup-sidebar {
-              flex: 1 1 auto; /* Permette alla sidebar di occupare la larghezza */
+              flex: 1 1 auto;
+              /* Permette alla sidebar di occupare la larghezza */
               width: 100%;
           }
 
           #chatbox {
-              height: 350px; /* Riduce l'altezza per schermi più piccoli */
+              height: 350px;
+              /* Riduce l'altezza per schermi più piccoli */
               padding: 15px;
           }
 
           .additional-inputs {
-              flex-direction: column; /* Impila anche i box di input aggiuntivi */
+              flex-direction: column;
+              /* Impila anche i box di input aggiuntivi */
               gap: 15px;
           }
       }
@@ -457,6 +463,13 @@
 </head>
 
 <body>
+<!-- NUOVO: Blocco di configurazione per le "variabili d'ambiente" -->
+<script>
+  window.__APP_CONFIG__ = {
+    API_URL: '__API_URL__' // Questo è un placeholder!
+  };
+</script>
+
 <div id="app">
   <div class="app-container">
     <header class="app-header">
@@ -468,42 +481,35 @@
       <aside class="mockup-sidebar">
         <h3><span class="icon">📍</span>Pianifica la tua Visita</h3>
         <ul class="mockup-item-list">
-          <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)"
-              :class="{ 'selected': isCitySelected(dest.name) }">
+          <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)" :class="{ 'selected': isCitySelected(dest.name) }">
             <span class="icon">{{ dest.icon }}</span>{{ dest.name }}
           </li>
           <div class="input-group">
             <label for="customCities">Aggiungi città</label>
-            <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Es: Firenze, Siena"
-                   :disabled="isLoading">
+            <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Es: Firenze, Siena" :disabled="isLoading">
           </div>
         </ul>
 
         <h3><span class="icon">🧭</span>Stile di Viaggio</h3>
         <div class="travel-styles">
-            <span v-for="style in travelStyles" :key="style.name" class="style-tag"
-                  @click="toggleStyleSelection(style.name)" :class="{ 'selected': isStyleSelected(style.name) }">
-              {{ style.name }}
-            </span>
+                        <span v-for="style in travelStyles" :key="style.name" class="style-tag" @click="toggleStyleSelection(style.name)" :class="{ 'selected': isStyleSelected(style.name) }">
+                            {{ style.name }}
+                        </span>
           <div class="input-group">
             <label for="customTags">Aggiungi interessi</label>
-            <input type="text" id="customTags" v-model="customTagsInput" placeholder="Es: trekking, fotografia"
-                   :disabled="isLoading">
+            <input type="text" id="customTags" v-model="customTagsInput" placeholder="Es: trekking, fotografia" :disabled="isLoading">
           </div>
         </div>
 
         <h3><span class="icon">💡</span>Idee di Itinerario</h3>
         <ul class="mockup-item-list">
-          <li
-            @click="generatePredefinedTrip('Crea un itinerario di un giorno a Vinci per una famiglia con bambini, focalizzato su Leonardo e attività interattive.')">
+          <li @click="generatePredefinedTrip('Crea un itinerario di un giorno a Vinci per una famiglia con bambini, focalizzato su Leonardo e attività interattive.')">
             <span class="icon">👨‍👩‍👧‍👦</span>Un Giorno con Leonardo
           </li>
-          <li
-            @click="generatePredefinedTrip('Proponi un weekend romantico tra Vinci e le colline del Chianti, con focus su enogastronomia e relax.')">
+          <li @click="generatePredefinedTrip('Proponi un weekend romantico tra Vinci e le colline del Chianti, con focus su enogastronomia e relax.')">
             <span class="icon">🍷</span>Weekend Enogastronomico
           </li>
-          <li
-            @click="generatePredefinedTrip('Sto cercando un itinerario culturale di 3 giorni in Toscana con base a Vinci. Quali borghi e musei meno conosciuti dovrei visitare nei dintorni?')">
+          <li @click="generatePredefinedTrip('Sto cercando un itinerario culturale di 3 giorni in Toscana con base a Vinci. Quali borghi e musei meno conosciuti dovrei visitare nei dintorni?')">
             <span class="icon">🏛️</span>Tesori Nascosti Toscani
           </li>
         </ul>
@@ -517,8 +523,7 @@
           </div>
 
           <div id="input-area">
-              <textarea id="userInput" placeholder="Oppure descrivi qui il tuo viaggio ideale..." v-model="userInput"
-                        @keypress.enter.prevent="handleEnter" :disabled="isLoading" rows="1"></textarea>
+            <textarea id="userInput" placeholder="Oppure descrivi qui il tuo viaggio ideale..." v-model="userInput" @keypress.enter.prevent="handleEnter" :disabled="isLoading" rows="1"></textarea>
             <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
               <span>➤</span>
             </button>
@@ -535,7 +540,10 @@
 <script type="module">
   const { createApp, ref, reactive, nextTick, onMounted, computed } = Vue;
 
-  const API_URL = 'http://127.0.0.1:12000/process';
+  const apiUrlFromConfig = window.__APP_CONFIG__?.API_URL;
+  const API_URL = (apiUrlFromConfig && apiUrlFromConfig !== '__API_URL__')
+    ? `${apiUrlFromConfig}/process`
+    : 'http://127.0.0.1:12000/process'; // Fallback per lo sviluppo locale
 
   createApp({
     setup() {
@@ -732,9 +740,6 @@
         const textarea = document.getElementById('userInput');
         if (textarea) {
           textarea.addEventListener('input', autoResizeTextarea);
-          // --- MODIFICA PER MOBILE UX ---
-          // Evita di far apparire subito la tastiera su mobile, che può coprire il contenuto.
-          // L'utente può tappare sull'input per attivarlo.
           if (window.innerWidth > 850) {
             textarea.focus();
           }
