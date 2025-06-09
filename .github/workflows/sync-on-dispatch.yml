@@ -21,6 +21,7 @@ jobs:
           git remote add upstream https://github.com/TripGenius/tripgenius-frontend.git
           git fetch upstream
           git checkout main
-          git reset --hard upstream/main
-          git push origin main --force
+          git restore --source=upstream/main -- . ':!/.github/workflows'
+          git commit -am "Sync with upstream (excluding workflows)"
+          git push origin main
 
