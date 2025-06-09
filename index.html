@@ -89,15 +89,11 @@
 </head>
 
 <body>
-<!-- Blocco di configurazione che verrà popolato al momento della build -->
-<script>
-  window.__APP_CONFIG__ = {
-    API_URL: '__API_URL__' // Questo è un placeholder!
-  };
-</script>
+<!-- REMOVED: The unused configuration block has been deleted to avoid confusion. -->
+<!-- The Vue app will now exclusively use the relative /api/process path. -->
 
 <div id="app">
-  <!-- The rest of your app's HTML is identical -->
+  <!-- The rest of your app's HTML remains identical -->
   <div class="app-container">
     <header class="app-header">
       <h1><span class="icon">🗺️</span>TripGenius</h1>
@@ -140,14 +136,40 @@
       </aside>
       <main class="content-area">
         <div class="chat-interface">
-          <div id="chatbox" ref="chatboxEl"></div>
+          <!-- IMPROVEMENT: The logic to render messages has been moved entirely into Vue -->
+          <!-- This makes the code cleaner and more idiomatic for a Vue application. -->
+          <div id="chatbox" ref="chatboxEl">
+            <div v-for="(message, index) in displayMessages" :key="index" :class="getMessageClass(message)">
+              <template v-if="message.type === 'structured'">
+                <div class="structured-response-card">
+                  <h4 v-if="message.text.title"><span class="icon">🗺️</span>{{ message.text.title }}</h4>
+                  <div class="content-block" v-if="message.text.description" v-html="formatMessage(message.text.description)"></div>
+                  <div class="content-block" v-if="message.text.itinerary">
+                    <ul>
+                      <li v-for="item in message.text.itinerary" v-html="formatMessage(item)"></li>
+                    </ul>
+                  </div>
+                  <div class="insight-card" v-if="message.text.insight">
+                    <p v-html="formatMessage(message.text.insight)"></p>
+                  </div>
+                </div>
+              </template>
+              <template v-else>
+                <p v-html="formatMessage(message.text)"></p>
+              </template>
+            </div>
+          </div>
           <div id="input-area">
-            <textarea id="userInput" placeholder="Oppure descrivi qui il tuo viaggio ideale..." v-model="userInput" @keypress.enter.prevent="handleEnter" :disabled="isLoading" rows="1"></textarea>
+            <textarea id="userInput" placeholder="Oppure descrivi qui il tuo viaggio ideale..." v-model="userInput" @keypress.enter.prevent="handleEnter" @input="autoResizeTextarea" :disabled="isLoading" rows="1"></textarea>
             <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
               <span>➤</span>
             </button>
           </div>
-          <div class="status-indicators"></div>
+          <div class="status-indicators">
+            <!-- You can add a loading indicator here if you want -->
+            <p v-if="isLoading">Elaborazione in corso...</p>
+            <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+          </div>
         </div>
       </main>
     </div>
@@ -155,23 +177,21 @@
 </div>
 
 <script type="module">
-  const { createApp, ref, reactive, nextTick, onMounted, computed } = Vue;
+  const { createApp, ref, reactive, nextTick, onMounted, computed, watch } = Vue;
 
+  // This is the single source of truth for our API endpoint.
+  // It's a relative path that will be proxied by `serve` locally and Vercel in production.
   const API_URL = '/api/process';
 
   createApp({
     setup() {
-      // --- NUOVO: Logica per il Session ID ---
-      // Cerca un ID nella sessionStorage. Se non esiste, ne crea uno nuovo.
-      // Questo ID persisterà per la durata della sessione del browser (cioè, fino alla chiusura della scheda).
+      // Session ID logic remains the same.
       let sessionId = sessionStorage.getItem('tripGeniusSessionId');
       if (!sessionId) {
-        // Genera un grande intero casuale come ID di sessione
         sessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
         sessionStorage.setItem('tripGeniusSessionId', sessionId);
       }
       const userSessionId = sessionId;
-      // --- Fine della nuova logica ---
 
       const userInput = ref('');
       const isLoading = ref(false);
@@ -203,7 +223,6 @@
         type: 'text'
       };
       const displayMessages = reactive([initialBotMessage]);
-      const conversationHistory = ref([initialBotMessage.text]);
 
       const canSendMessage = computed(() => {
         return userInput.value.trim().length > 0 ||
@@ -213,24 +232,42 @@
           customTagsInput.value.trim().length > 0;
       });
 
-      const scrollToBottom = () => nextTick(() => chatboxEl.value?.scrollTo({ top: chatboxEl.value.scrollHeight, behavior: 'smooth' }));
+      const scrollToBottom = () => {
+        nextTick(() => {
+          if (chatboxEl.value) {
+            chatboxEl.value.scrollTo({ top: chatboxEl.value.scrollHeight, behavior: 'smooth' });
+          }
+        });
+      };
+
+      // Watch for new messages and scroll down.
+      watch(displayMessages, scrollToBottom, { deep: true });
 
       const addMessageToDisplay = (message) => {
         displayMessages.push(message);
-        scrollToBottom();
       };
 
       const formatMessage = (text) => {
         if (typeof text !== 'string') return '';
-        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+        // Using a more robust regex to handle bold/italic formatting
+        return text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/\n/g, '<br>');
+      };
+
+      const getMessageClass = (message) => {
+        if (message.type === 'structured') {
+          return ''; // The card has its own class
+        }
+        return `message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`;
       };
 
       const tryParseJSON = (jsonString) => {
         try {
           const o = JSON.parse(jsonString);
           if (o && typeof o === "object") { return o; }
-        }
-        catch (e) { }
+        } catch (e) { }
         return false;
       };
 
@@ -240,12 +277,10 @@
 
         const customCities = customCitiesInput.value.trim().split(',').map(c => c.trim()).filter(c => c);
         const customTags = customTagsInput.value.trim().split(',').map(t => t.trim()).filter(t => t);
-
         const finalCities = [...new Set([...selectedCities.value, ...customCities])];
         const finalTags = [...new Set([...selectedStyles.value, ...customTags])];
 
         let userQueryText = messageText;
-
         if (!userQueryText && (finalCities.length > 0 || finalTags.length > 0)) {
           let contextParts = [];
           if (finalCities.length > 0) contextParts.push(`città: ${finalCities.join(', ')}`);
@@ -253,9 +288,7 @@
           userQueryText = `Crea un itinerario considerando ${contextParts.join(' e ')}.`;
         }
 
-        addMessageToDisplay({ text: userQueryText, sender: 'user' });
-        conversationHistory.value.push(userQueryText);
-
+        addMessageToDisplay({ text: userQueryText, sender: 'user', type: 'text' });
         userInput.value = '';
         isLoading.value = true;
         errorMessage.value = '';
@@ -265,10 +298,9 @@
           const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // --- MODIFICATO: Aggiunto il session_id al corpo della richiesta ---
             body: JSON.stringify({
               session_id: userSessionId,
-              message: conversationHistory.value[-1],
+              message: userQueryText,
               cities: finalCities,
               tags: finalTags,
             }),
@@ -276,21 +308,20 @@
 
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || `Errore API: ${response.status}`);
+            throw new Error(errorData.detail || `Errore API: ${response.status} ${response.statusText}`);
           }
 
           const data = await response.json();
           const botResponseText = data.response || "Scusa, non sono riuscito a elaborare una risposta.";
           const structuredData = tryParseJSON(botResponseText);
 
-          if (structuredData) {
+          if (structuredData && structuredData.title) {
             addMessageToDisplay({ text: structuredData, sender: 'bot', type: 'structured' });
           } else {
             addMessageToDisplay({ text: botResponseText, sender: 'bot', type: 'text' });
           }
 
-          conversationHistory.value.push(botResponseText);
-
+          // Clear inputs after successful submission
           selectedCities.value = [];
           selectedStyles.value = [];
           customCitiesInput.value = '';
@@ -298,19 +329,19 @@
 
         } catch (error) {
           console.error('Errore chiamata API:', error);
-          errorMessage.value = error.message;
+          errorMessage.value = `Si è verificato un errore: ${error.message}`;
+          addMessageToDisplay({ text: `⚠️ ${errorMessage.value}`, sender: 'bot', type: 'text' });
         } finally {
           isLoading.value = false;
-          scrollToBottom();
           document.getElementById('userInput')?.focus();
         }
       };
 
-      // The rest of the setup function is the same...
       const generatePredefinedTrip = (prompt) => {
         userInput.value = prompt;
         processUserMessage();
       };
+
       const toggleCitySelection = (cityName) => {
         const index = selectedCities.value.indexOf(cityName);
         if (index > -1) { selectedCities.value.splice(index, 1); } else { selectedCities.value.push(cityName); }
@@ -321,52 +352,40 @@
         if (index > -1) { selectedStyles.value.splice(index, 1); } else { selectedStyles.value.push(styleName); }
       };
       const isStyleSelected = (styleName) => selectedStyles.value.includes(styleName);
+
       const handleEnter = (event) => {
         if (!event.shiftKey) { event.preventDefault(); processUserMessage(); }
       };
+
       const autoResizeTextarea = (event) => {
         const textarea = event.target;
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.height = 'auto'; // Reset height
+        // Set to scrollHeight if content exceeds, otherwise keep it minimal
+        const newHeight = Math.min(textarea.scrollHeight, 200); // Max height of 200px
+        textarea.style.height = `${newHeight}px`;
       };
+
       onMounted(() => {
-        const chatboxContainer = document.getElementById('chatbox');
-        const renderVueMessages = () => {
-          chatboxContainer.innerHTML = '';
-          displayMessages.forEach(message => {
-            let messageEl;
-            if (message.sender === 'user') {
-              messageEl = document.createElement('div');
-              messageEl.className = 'message user-message';
-              messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
-            } else {
-              messageEl = document.createElement('div');
-              messageEl.className = 'message bot-message';
-              messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
-            }
-            chatboxContainer.appendChild(messageEl);
-          });
-          scrollToBottom();
-        };
-        renderVueMessages();
+        // Now that rendering is handled by Vue, we just need to focus the input.
         const textarea = document.getElementById('userInput');
-        if (textarea) {
-          textarea.addEventListener('input', autoResizeTextarea);
-          if (window.innerWidth > 850) { textarea.focus(); }
+        if (textarea && window.innerWidth > 850) {
+          textarea.focus();
         }
+        scrollToBottom(); // Initial scroll
       });
+
       return {
         userInput, isLoading, errorMessage, displayMessages, chatboxEl,
-        processUserMessage, handleEnter, formatMessage, canSendMessage,
+        processUserMessage, handleEnter, formatMessage, canSendMessage, getMessageClass,
         destinations, travelStyles, selectedCities, selectedStyles,
         toggleCitySelection, isCitySelected,
         toggleStyleSelection, isStyleSelected,
         generatePredefinedTrip,
-        customCitiesInput, customTagsInput
+        customCitiesInput, customTagsInput,
+        autoResizeTextarea
       };
     }
   }).mount('#app');
 </script>
 </body>
-
 </html>
