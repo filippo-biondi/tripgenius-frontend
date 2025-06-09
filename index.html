@@ -181,7 +181,7 @@
 
   // This is the single source of truth for our API endpoint.
   // It's a relative path that will be proxied by `serve` locally and Vercel in production.
-  const API_URL = '/api/process';
+  const API_URL = `${import.meta.env.VITE_API_BASE}/process`;
 
   createApp({
     setup() {
