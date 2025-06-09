@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "echo 'No dev script configured. Use npm start to build and preview.' && exit 1",
+    "dev": "echo 'No dev script configured. Run npm start to build and preview.' && exit 1",
     "build": "node build.mjs",
     "start": "npm run build && serve -s dist",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "dotenv": "^16.5.0",
     "serve": "^14.2.4",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2"

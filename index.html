@@ -157,12 +157,7 @@
 <script type="module">
   const { createApp, ref, reactive, nextTick, onMounted, computed } = Vue;
 
-  // Legge la URL dell'API dal blocco di configurazione globale
-  // Fornisce un fallback per il testing locale se il placeholder non è stato sostituito
-  const apiUrlFromConfig = window.__APP_CONFIG__?.API_URL;
-  const API_URL = 'http://' + ((apiUrlFromConfig && apiUrlFromConfig !== '__API_URL__')
-    ? `${apiUrlFromConfig}/process`
-    : '127.0.0.1:12000/process'); // Fallback per lo sviluppo locale
+  const API_URL = '/api/process';
 
   createApp({
     setup() {
@@ -266,7 +261,6 @@
         errorMessage.value = '';
         autoResizeTextarea({ target: document.getElementById('userInput') });
 
-        console.log("API: ", API_URL);
         try {
           const response = await fetch(API_URL, {
             method: 'POST',

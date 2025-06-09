@@ -2,6 +2,8 @@
 env/
 .vscode/
 
+.env
+
 # Logs
 logs
 *.log
