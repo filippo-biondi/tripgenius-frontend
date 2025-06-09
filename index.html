@@ -7,716 +7,721 @@
   <title>TripGenius - Demo</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
-    /* Import di font più adatti al tema: un serif elegante per i titoli e un sans-serif pulito per il testo */
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&display=swap');
+      /* Import di font più adatti al tema: un serif elegante per i titoli e un sans-serif pulito per il testo */
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&display=swap');
 
-    /* --- NUOVA PALETTE DI COLORI ISPIRATA ALLA TOSCANA --- */
-    :root {
-      --primary-color: #8C5B42;
-      /* Marrone Terracotta */
-      --secondary-color: #4CAF50;
-      /* Verde Oliva/Cipresso */
-      --accent-color: #FFC107;
-      /* Giallo Girasole/Ocra */
-      --background-color: #FDFBF5;
-      /* Crema/Pergamena */
-      --surface-color: #FFFFFF;
-      --text-color: #3D2B1F;
-      /* Marrone scuro, quasi seppia */
-      --text-light-color: #8D8D8D;
-      --border-color: #E0D8CC;
-      --font-family-sans: 'Montserrat', sans-serif;
-      --font-family-serif: 'Playfair Display', serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-family-sans);
-      background-color: var(--background-color);
-      background-image: linear-gradient(rgba(253, 251, 245, 0.85), rgba(253, 251, 245, 0.95)), url('https://images.unsplash.com/photo-1579447230950-8d43248615a5?q=80&w=2070');
-      background-size: cover;
-      background-position: center;
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    #app {
-      width: 100%;
-      max-width: 950px;
-    }
-
-    .app-container {
-      background-color: var(--surface-color);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(61, 43, 31, 0.15);
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-      border: 1px solid var(--border-color);
-    }
-
-    .app-header {
-      text-align: center;
-    }
-
-    .app-header h1 {
-      font-family: var(--font-family-serif);
-      font-size: 2.8em;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 5px;
-    }
-
-    .app-header h1 .icon {
-      font-size: 0.9em;
-      margin-right: 15px;
-    }
-
-    .app-header p {
-      font-size: 1.1em;
-      color: var(--text-color);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .main-content {
-      display: flex;
-      gap: 30px;
-    }
-
-    /* --- SIDEBAR MIGLIORATA E TEMATIZZATA --- */
-    .mockup-sidebar {
-      flex: 0 0 280px;
-      padding: 20px;
-      background-color: #F9F7F2;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-
-    .mockup-sidebar h3 {
-      font-family: var(--font-family-serif);
-      font-size: 1.3em;
-      color: var(--primary-color);
-      margin-top: 0;
-      margin-bottom: 15px;
-      border-bottom: 2px solid var(--secondary-color);
-      padding-bottom: 8px;
-      display: flex;
-      align-items: center;
-    }
-
-    .mockup-sidebar h3 .icon {
-      margin-right: 10px;
-      font-size: 1.1em;
-      color: var(--secondary-color);
-    }
-
-    .mockup-sidebar h3:not(:first-child) {
-      margin-top: 25px;
-    }
-
-    .mockup-item-list li {
-      background-color: var(--surface-color);
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      border-left: 4px solid transparent;
-    }
-
-    .mockup-item-list li:hover {
-      transform: translateX(5px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      border-left-color: var(--secondary-color);
-    }
-
-    .mockup-item-list li .icon {
-      margin-right: 8px;
-      color: var(--accent-color);
-    }
-
-    .mockup-item-list li.selected {
-      background: var(--primary-color);
-      color: white;
-      box-shadow: 0 4px 12px rgba(140, 91, 66, 0.4);
-      transform: translateX(5px);
-      border-left-color: var(--accent-color);
-    }
-
-    .mockup-item-list li.selected .icon,
-    .mockup-item-list li.selected small {
-      color: white;
-    }
-
-    .travel-styles .style-tag {
-      display: inline-block;
-      background-color: #f0f0f0;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      margin-right: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .travel-styles .style-tag:hover {
-      background-color: #EAEAEA;
-      transform: translateY(-2px);
-    }
-
-    .travel-styles .style-tag.selected {
-      background: var(--secondary-color);
-      color: white;
-      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
-      transform: translateY(-2px);
-      border-color: var(--secondary-color);
-    }
-
-    /* Area Contenuti Dinamici */
-    .content-area {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    #chatbox {
-      height: 400px;
-      /* Altezza ridotta per fare spazio ai nuovi input */
-      border: 1px solid var(--border-color);
-      overflow-y: auto;
-      padding: 20px;
-      margin-bottom: 20px;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .message {
-      padding: 12px 18px;
-      border-radius: 18px;
-      max-width: 90%;
-      word-wrap: break-word;
-      line-height: 1.6;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+      /* --- NUOVA PALETTE DI COLORI ISPIRATA ALLA TOSCANA --- */
+      :root {
+          --primary-color: #8C5B42;
+          /* Marrone Terracotta */
+          --secondary-color: #4CAF50;
+          /* Verde Oliva/Cipresso */
+          --accent-color: #FFC107;
+          /* Giallo Girasole/Ocra */
+          --background-color: #FDFBF5;
+          /* Crema/Pergamena */
+          --surface-color: #FFFFFF;
+          --text-color: #3D2B1F;
+          /* Marrone scuro, quasi seppia */
+          --text-light-color: #8D8D8D;
+          --border-color: #E0D8CC;
+          --font-family-sans: 'Montserrat', sans-serif;
+          --font-family-serif: 'Playfair Display', serif;
       }
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
       }
-    }
 
-    .message p {
-      white-space: pre-wrap;
-    }
+      body {
+          font-family: var(--font-family-sans);
+          background-color: var(--background-color);
+          background-image: linear-gradient(rgba(253, 251, 245, 0.85), rgba(253, 251, 245, 0.95)), url('https://images.unsplash.com/photo-1579447230950-8d43248615a5?q=80&w=2070');
+          background-size: cover;
+          background-position: center;
+          color: var(--text-color);
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+          padding: 20px;
+      }
 
-    .message p strong {
-      color: var(--primary-color);
-    }
+      #app {
+          width: 100%;
+          max-width: 950px;
+      }
 
-    .message p em {
-      color: var(--secondary-color);
-    }
+      .app-container {
+          background-color: var(--surface-color);
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 10px 40px rgba(61, 43, 31, 0.15);
+          display: flex;
+          flex-direction: column;
+          gap: 30px;
+          border: 1px solid var(--border-color);
+      }
 
-    .user-message {
-      background: linear-gradient(135deg, var(--primary-color), #A27B68);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-    }
+      .app-header {
+          text-align: center;
+      }
 
-    .bot-message {
-      background-color: #E9E9EB;
-      color: var(--text-color);
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
+      .app-header h1 {
+          font-family: var(--font-family-serif);
+          font-size: 2.8em;
+          font-weight: 700;
+          color: var(--primary-color);
+          margin-bottom: 5px;
+      }
 
-    .structured-response-card {
-      background-color: var(--surface-color);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      align-self: flex-start;
-      width: 100%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      animation: fadeIn 0.5s ease-out;
-    }
+      .app-header h1 .icon {
+          font-size: 0.9em;
+          margin-right: 15px;
+      }
 
-    .structured-response-card h4 {
-      font-family: var(--font-family-serif);
-      font-size: 1.4em;
-      color: var(--primary-color);
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-    }
+      .app-header p {
+          font-size: 1.1em;
+          color: var(--text-color);
+          max-width: 600px;
+          margin: 0 auto;
+      }
 
-    .structured-response-card h4 .icon {
-      margin-right: 12px;
-      color: var(--secondary-color);
-      font-size: 1.2em;
-    }
+      .main-content {
+          display: flex;
+          gap: 30px;
+      }
 
-    .structured-response-card .content-block {
-      margin-bottom: 15px;
-    }
+      /* --- SIDEBAR MIGLIORATA E TEMATIZZATA --- */
+      .mockup-sidebar {
+          flex: 0 0 280px;
+          padding: 20px;
+          background-color: #F9F7F2;
+          border-radius: 12px;
+          border: 1px solid var(--border-color);
+      }
 
-    .structured-response-card ul {
-      list-style: '— ';
-      padding-left: 20px;
-    }
+      .mockup-sidebar h3 {
+          font-family: var(--font-family-serif);
+          font-size: 1.3em;
+          color: var(--primary-color);
+          margin-top: 0;
+          margin-bottom: 15px;
+          border-bottom: 2px solid var(--secondary-color);
+          padding-bottom: 8px;
+          display: flex;
+          align-items: center;
+      }
 
-    .structured-response-card ul li {
-      margin-bottom: 8px;
-    }
+      .mockup-sidebar h3 .icon {
+          margin-right: 10px;
+          font-size: 1.1em;
+          color: var(--secondary-color);
+      }
 
-    .structured-response-card .insight-card {
-      background-color: var(--background-color);
-      padding: 15px;
-      border-radius: 8px;
-      border-left: 4px solid var(--accent-color);
-      margin-top: 15px;
-    }
+      .mockup-sidebar h3:not(:first-child) {
+          margin-top: 25px;
+      }
 
-    .insight-card p {
-      font-size: 0.95em;
-      line-height: 1.5;
-    }
+      /* --- MODIFICA QUI --- */
+      .mockup-item-list {
+          list-style-type: none; /* Rimuove i pallini/punti elenco */
+      }
 
-    .insight-card strong {
-      color: var(--primary-color);
-    }
+      .mockup-item-list li {
+          background-color: var(--surface-color);
+          padding: 10px 15px;
+          margin-bottom: 10px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
+          border-left: 4px solid transparent;
+      }
 
-    /* --- NUOVO: Stili per i box di testo aggiuntivi --- */
-    .additional-inputs {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 15px;
-    }
+      .mockup-item-list li:hover {
+          transform: translateX(5px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-left-color: var(--secondary-color);
+      }
 
-    .input-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
+      .mockup-item-list li .icon {
+          margin-right: 8px;
+          color: var(--accent-color);
+      }
 
-    .input-group label {
-      font-size: 0.9em;
-      color: var(--text-color);
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
+      .mockup-item-list li.selected {
+          background: var(--primary-color);
+          color: white;
+          box-shadow: 0 4px 12px rgba(140, 91, 66, 0.4);
+          transform: translateX(5px);
+          border-left-color: var(--accent-color);
+      }
 
-    .input-group input {
-      padding: 10px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.95em;
-      transition: all 0.2s ease;
-      background-color: var(--surface-color);
-    }
+      .mockup-item-list li.selected .icon,
+      .mockup-item-list li.selected small {
+          color: white;
+      }
 
-    .input-group input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2);
-    }
+      .travel-styles .style-tag {
+          display: inline-block;
+          background-color: #f0f0f0;
+          border: 1px solid var(--border-color);
+          color: var(--text-color);
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 0.9em;
+          margin-right: 8px;
+          margin-bottom: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
 
-    #input-area {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
+      .travel-styles .style-tag:hover {
+          background-color: #EAEAEA;
+          transform: translateY(-2px);
+      }
 
-    #userInput {
-      flex-grow: 1;
-      padding: 12px 20px;
-      border: 1px solid var(--border-color);
-      border-radius: 25px;
-      resize: none;
-      font-family: inherit;
-      font-size: 1em;
-      transition: box-shadow 0.2s ease;
-      min-height: 50px;
-    }
+      .travel-styles .style-tag.selected {
+          background: var(--secondary-color);
+          color: white;
+          box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+          transform: translateY(-2px);
+          border-color: var(--secondary-color);
+      }
 
-    #userInput:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2);
-    }
+      /* Area Contenuti Dinamici */
+      .content-area {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+      }
 
-    #sendButton {
-      background-color: var(--secondary-color);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.3em;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
+      #chatbox {
+          height: 400px;
+          /* Altezza ridotta per fare spazio ai nuovi input */
+          border: 1px solid var(--border-color);
+          overflow-y: auto;
+          padding: 20px;
+          margin-bottom: 20px;
+          background-color: rgba(255, 255, 255, 0.7);
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+      }
 
-    #sendButton:hover {
-      background-color: #388E3C;
-      transform: scale(1.05);
-    }
+      .message {
+          padding: 12px 18px;
+          border-radius: 18px;
+          max-width: 90%;
+          word-wrap: break-word;
+          line-height: 1.6;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+          animation: fadeIn 0.4s ease-out;
+      }
 
-    #sendButton:disabled {
-      background-color: #BDBDBD;
-      cursor: not-allowed;
-    }
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(10px);
+          }
 
-    .status-indicators {
-      min-height: 25px;
-      text-align: center;
-      margin-top: 10px;
-    }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
 
-    .loading-animation .dot {
-      background-color: var(--primary-color);
-    }
+      .message p {
+          white-space: pre-wrap;
+      }
+
+      .message p strong {
+          color: var(--primary-color);
+      }
+
+      .message p em {
+          color: var(--secondary-color);
+      }
+
+      .user-message {
+          background: linear-gradient(135deg, var(--primary-color), #A27B68);
+          color: white;
+          align-self: flex-end;
+          border-bottom-right-radius: 5px;
+      }
+
+      .bot-message {
+          background-color: #E9E9EB;
+          color: var(--text-color);
+          align-self: flex-start;
+          border-bottom-left-radius: 5px;
+      }
+
+      .structured-response-card {
+          background-color: var(--surface-color);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 20px;
+          align-self: flex-start;
+          width: 100%;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+          animation: fadeIn 0.5s ease-out;
+      }
+
+      .structured-response-card h4 {
+          font-family: var(--font-family-serif);
+          font-size: 1.4em;
+          color: var(--primary-color);
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid var(--border-color);
+          display: flex;
+          align-items: center;
+      }
+
+      .structured-response-card h4 .icon {
+          margin-right: 12px;
+          color: var(--secondary-color);
+          font-size: 1.2em;
+      }
+
+      .structured-response-card .content-block {
+          margin-bottom: 15px;
+      }
+
+      .structured-response-card ul {
+          list-style: '— ';
+          padding-left: 20px;
+      }
+
+      .structured-response-card ul li {
+          margin-bottom: 8px;
+      }
+
+      .structured-response-card .insight-card {
+          background-color: var(--background-color);
+          padding: 15px;
+          border-radius: 8px;
+          border-left: 4px solid var(--accent-color);
+          margin-top: 15px;
+      }
+
+      .insight-card p {
+          font-size: 0.95em;
+          line-height: 1.5;
+      }
+
+      .insight-card strong {
+          color: var(--primary-color);
+      }
+
+      /* --- NUOVO: Stili per i box di testo aggiuntivi --- */
+      .additional-inputs {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 15px;
+      }
+
+      .input-group {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .input-group label {
+          font-size: 0.9em;
+          color: var(--text-color);
+          margin-bottom: 5px;
+          font-weight: 500;
+      }
+
+      .input-group input {
+          padding: 10px 15px;
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          font-family: inherit;
+          font-size: 0.95em;
+          transition: all 0.2s ease;
+          background-color: var(--surface-color);
+      }
+
+      .input-group input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2);
+      }
+
+      #input-area {
+          display: flex;
+          gap: 10px;
+          align-items: flex-end;
+      }
+
+      #userInput {
+          flex-grow: 1;
+          padding: 12px 20px;
+          border: 1px solid var(--border-color);
+          border-radius: 25px;
+          resize: none;
+          font-family: inherit;
+          font-size: 1em;
+          transition: box-shadow 0.2s ease;
+          min-height: 50px;
+      }
+
+      #userInput:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2);
+      }
+
+      #sendButton {
+          background-color: var(--secondary-color);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.3em;
+          width: 50px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+      }
+
+      #sendButton:hover {
+          background-color: #388E3C;
+          transform: scale(1.05);
+      }
+
+      #sendButton:disabled {
+          background-color: #BDBDBD;
+          cursor: not-allowed;
+      }
+
+      .status-indicators {
+          min-height: 25px;
+          text-align: center;
+          margin-top: 10px;
+      }
+
+      .loading-animation .dot {
+          background-color: var(--primary-color);
+      }
   </style>
 </head>
 
 <body>
-  <div id="app">
-    <div class="app-container">
-      <header class="app-header">
-        <h1><span class="icon">🎨</span>TripGenius</h1>
-        <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
-      </header>
+<div id="app">
+  <div class="app-container">
+    <header class="app-header">
+      <h1><span class="icon">🎨</span>TripGenius</h1>
+      <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
+    </header>
 
-      <div class="main-content">
-        <aside class="mockup-sidebar">
-          <h3><span class="icon">📍</span>Pianifica la tua Visita</h3>
-          <ul class="mockup-item-list">
-            <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)"
+    <div class="main-content">
+      <aside class="mockup-sidebar">
+        <h3><span class="icon">📍</span>Pianifica la tua Visita</h3>
+        <ul class="mockup-item-list">
+          <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)"
               :class="{ 'selected': isCitySelected(dest.name) }">
-              <span class="icon">{{ dest.icon }}</span>{{ dest.name }}
-            </li>
-            <div class="input-group">
-              <label for="customCities">Aggiungi città</label>
-              <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Es: Firenze, Siena"
-                :disabled="isLoading">
-            </div>
-          </ul>
+            <span class="icon">{{ dest.icon }}</span>{{ dest.name }}
+          </li>
+          <div class="input-group">
+            <label for="customCities">Aggiungi città</label>
+            <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Es: Firenze, Siena"
+                   :disabled="isLoading">
+          </div>
+        </ul>
 
-          <h3><span class="icon">🧭</span>Stile di Viaggio</h3>
-          <div class="travel-styles">
+        <h3><span class="icon">🧭</span>Stile di Viaggio</h3>
+        <div class="travel-styles">
             <span v-for="style in travelStyles" :key="style.name" class="style-tag"
-              @click="toggleStyleSelection(style.name)" :class="{ 'selected': isStyleSelected(style.name) }">
+                  @click="toggleStyleSelection(style.name)" :class="{ 'selected': isStyleSelected(style.name) }">
               {{ style.name }}
             </span>
-            <div class="input-group">
-              <label for="customTags">Aggiungi interessi</label>
-              <input type="text" id="customTags" v-model="customTagsInput" placeholder="Es: trekking, fotografia"
-                :disabled="isLoading">
-            </div>
+          <div class="input-group">
+            <label for="customTags">Aggiungi interessi</label>
+            <input type="text" id="customTags" v-model="customTagsInput" placeholder="Es: trekking, fotografia"
+                   :disabled="isLoading">
+          </div>
+        </div>
+
+        <h3><span class="icon">💡</span>Idee di Itinerario</h3>
+        <ul class="mockup-item-list">
+          <li
+            @click="generatePredefinedTrip('Crea un itinerario di un giorno a Vinci per una famiglia con bambini, focalizzato su Leonardo e attività interattive.')">
+            <span class="icon">👨‍👩‍👧‍👦</span>Un Giorno con Leonardo
+          </li>
+          <li
+            @click="generatePredefinedTrip('Proponi un weekend romantico tra Vinci e le colline del Chianti, con focus su enogastronomia e relax.')">
+            <span class="icon">🍷</span>Weekend Enogastronomico
+          </li>
+          <li
+            @click="generatePredefinedTrip('Sto cercando un itinerario culturale di 3 giorni in Toscana con base a Vinci. Quali borghi e musei meno conosciuti dovrei visitare nei dintorni?')">
+            <span class="icon">🏛️</span>Tesori Nascosti Toscani
+          </li>
+        </ul>
+
+      </aside>
+
+      <main class="content-area">
+        <div class="chat-interface">
+          <div id="chatbox" ref="chatboxEl">
+            <!-- ... il contenuto della chatbox viene renderizzato qui da Vue ... -->
           </div>
 
-          <h3><span class="icon">💡</span>Idee di Itinerario</h3>
-          <ul class="mockup-item-list">
-            <li
-              @click="generatePredefinedTrip('Crea un itinerario di un giorno a Vinci per una famiglia con bambini, focalizzato su Leonardo e attività interattive.')">
-              <span class="icon">👨‍👩‍👧‍👦</span>Un Giorno con Leonardo
-            </li>
-            <li
-              @click="generatePredefinedTrip('Proponi un weekend romantico tra Vinci e le colline del Chianti, con focus su enogastronomia e relax.')">
-              <span class="icon">🍷</span>Weekend Enogastronomico
-            </li>
-            <li
-              @click="generatePredefinedTrip('Sto cercando un itinerario culturale di 3 giorni in Toscana con base a Vinci. Quali borghi e musei meno conosciuti dovrei visitare nei dintorni?')">
-              <span class="icon">🏛️</span>Tesori Nascosti Toscani
-            </li>
-          </ul>
-
-        </aside>
-
-        <main class="content-area">
-          <div class="chat-interface">
-            <div id="chatbox" ref="chatboxEl">
-              <!-- ... il contenuto della chatbox viene renderizzato qui da Vue ... -->
-            </div>
-
-            <div id="input-area">
+          <div id="input-area">
               <textarea id="userInput" placeholder="Oppure descrivi qui il tuo viaggio ideale..." v-model="userInput"
-                @keypress.enter.prevent="handleEnter" :disabled="isLoading" rows="1"></textarea>
-              <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
-                <span>➤</span>
-              </button>
-            </div>
-            <div class="status-indicators">
-              <!-- ... indicatori di stato ... -->
-            </div>
+                        @keypress.enter.prevent="handleEnter" :disabled="isLoading" rows="1"></textarea>
+            <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
+              <span>➤</span>
+            </button>
           </div>
-        </main>
-      </div>
+          <div class="status-indicators">
+            <!-- ... indicatori di stato ... -->
+          </div>
+        </div>
+      </main>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    const { createApp, ref, reactive, nextTick, onMounted, computed } = Vue;
+<script type="module">
+  const { createApp, ref, reactive, nextTick, onMounted, computed } = Vue;
 
-    const API_URL = 'http://127.0.0.1:12000/process';
+  const API_URL = 'http://127.0.0.1:12000/process';
 
-    createApp({
-      setup() {
-        const userInput = ref('');
-        const isLoading = ref(false);
-        const errorMessage = ref('');
-        const chatboxEl = ref(null);
+  createApp({
+    setup() {
+      const userInput = ref('');
+      const isLoading = ref(false);
+      const errorMessage = ref('');
+      const chatboxEl = ref(null);
 
-        // --- NUOVO: Variabili per i box di testo personalizzati ---
-        const customCitiesInput = ref('');
-        const customTagsInput = ref('');
+      // --- NUOVO: Variabili per i box di testo personalizzati ---
+      const customCitiesInput = ref('');
+      const customTagsInput = ref('');
 
-        const destinations = ref([
-          { name: 'Vinci Centro Storico', icon: '🏰' },
-          { name: 'Museo Leonardiano', icon: '⚙️' },
-          { name: 'Casa Natale (Anchiano)', icon: '🏡' },
-          { name: 'Colline del Chianti', icon: '🍇' }
-        ]);
-        const travelStyles = ref([
-          { name: 'Arte e Cultura', icon: '🎨' },
-          { name: 'Enogastronomia', icon: '🍷' },
-          { name: 'Natura e Relax', icon: '🌳' },
-          { name: 'Famiglie', icon: '👨‍👩‍👧‍👦' },
-          { name: 'Avventura', icon: '🚴' },
-        ]);
-        const selectedCities = ref([]);
-        const selectedStyles = ref([]);
+      const destinations = ref([
+        { name: 'Vinci Centro Storico', icon: '🏰' },
+        { name: 'Museo Leonardiano', icon: '⚙️' },
+        { name: 'Casa Natale (Anchiano)', icon: '🏡' },
+        { name: 'Colline del Chianti', icon: '🍇' }
+      ]);
+      const travelStyles = ref([
+        { name: 'Arte e Cultura', icon: '🎨' },
+        { name: 'Enogastronomia', icon: '🍷' },
+        { name: 'Natura e Relax', icon: '🌳' },
+        { name: 'Famiglie', icon: '👨‍👩‍👧‍👦' },
+        { name: 'Avventura', icon: '🚴' },
+      ]);
+      const selectedCities = ref([]);
+      const selectedStyles = ref([]);
 
-        const initialBotMessage = {
-          text: "Benvenuto! Sono il tuo assistente AI per i viaggi. Seleziona le tue preferenze, compila i campi qui sotto o chiedimi di creare un itinerario su misura per te.",
-          sender: 'bot',
-          type: 'text'
-        };
-        const displayMessages = reactive([initialBotMessage]);
-        const conversationHistory = ref([initialBotMessage.text]);
+      const initialBotMessage = {
+        text: "Benvenuto! Sono il tuo assistente AI per i viaggi. Seleziona le tue preferenze, compila i campi qui sotto o chiedimi di creare un itinerario su misura per te.",
+        sender: 'bot',
+        type: 'text'
+      };
+      const displayMessages = reactive([initialBotMessage]);
+      const conversationHistory = ref([initialBotMessage.text]);
 
-        // --- MODIFICATO: canSendMessage ora controlla tutti gli input ---
-        const canSendMessage = computed(() => {
-          return userInput.value.trim().length > 0 ||
-            selectedCities.value.length > 0 ||
-            selectedStyles.value.length > 0 ||
-            customCitiesInput.value.trim().length > 0 ||
-            customTagsInput.value.trim().length > 0;
-        });
+      // --- MODIFICATO: canSendMessage ora controlla tutti gli input ---
+      const canSendMessage = computed(() => {
+        return userInput.value.trim().length > 0 ||
+          selectedCities.value.length > 0 ||
+          selectedStyles.value.length > 0 ||
+          customCitiesInput.value.trim().length > 0 ||
+          customTagsInput.value.trim().length > 0;
+      });
 
-        const scrollToBottom = () => nextTick(() => chatboxEl.value?.scrollTo({ top: chatboxEl.value.scrollHeight, behavior: 'smooth' }));
+      const scrollToBottom = () => nextTick(() => chatboxEl.value?.scrollTo({ top: chatboxEl.value.scrollHeight, behavior: 'smooth' }));
 
-        const addMessageToDisplay = (message) => {
-          displayMessages.push(message);
+      const addMessageToDisplay = (message) => {
+        displayMessages.push(message);
+        scrollToBottom();
+      };
+
+      const formatMessage = (text) => {
+        if (typeof text !== 'string') return '';
+        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+      };
+
+      const tryParseJSON = (jsonString) => {
+        try {
+          const o = JSON.parse(jsonString);
+          if (o && typeof o === "object") { return o; }
+        }
+        catch (e) { }
+        return false;
+      };
+
+      // --- MODIFICATO: La funzione principale ora gestisce tutti gli input ---
+      const processUserMessage = async () => {
+        const messageText = userInput.value.trim();
+        if (!canSendMessage.value || isLoading.value) return;
+
+        // --- NUOVO: Legge e processa i valori dai nuovi box di testo ---
+        const customCities = customCitiesInput.value.trim().split(',').map(c => c.trim()).filter(c => c);
+        const customTags = customTagsInput.value.trim().split(',').map(t => t.trim()).filter(t => t);
+
+        // Combina e rimuove duplicati
+        const finalCities = [...new Set([...selectedCities.value, ...customCities])];
+        const finalTags = [...new Set([...selectedStyles.value, ...customTags])];
+
+        let userQueryText = messageText;
+
+        // Se non c'è testo nel box principale, crea un messaggio di contesto per l'utente
+        if (!userQueryText && (finalCities.length > 0 || finalTags.length > 0)) {
+          let contextParts = [];
+          if (finalCities.length > 0) contextParts.push(`città: ${finalCities.join(', ')}`);
+          if (finalTags.length > 0) contextParts.push(`interessi: ${finalTags.join(', ')}`);
+          userQueryText = `Crea un itinerario considerando ${contextParts.join(' e ')}.`;
+        }
+
+        addMessageToDisplay({ text: userQueryText, sender: 'user' });
+        conversationHistory.value.push(userQueryText);
+
+        userInput.value = ''; // Pulisce solo il box principale
+        isLoading.value = true;
+        errorMessage.value = '';
+        autoResizeTextarea({ target: document.getElementById('userInput') });
+
+        try {
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: conversationHistory.value,
+              cities: finalCities, // Invia i dati combinati
+              tags: finalTags,     // Invia i dati combinati
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Errore API: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const botResponseText = data.response || "Scusa, non sono riuscito a elaborare una risposta.";
+          const structuredData = tryParseJSON(botResponseText);
+
+          if (structuredData) {
+            addMessageToDisplay({ text: structuredData, sender: 'bot', type: 'structured' });
+          } else {
+            addMessageToDisplay({ text: botResponseText, sender: 'bot', type: 'text' });
+          }
+
+          conversationHistory.value.push(botResponseText);
+
+          // --- NUOVO: Pulisce tutti gli input dopo l'invio ---
+          selectedCities.value = [];
+          selectedStyles.value = [];
+          customCitiesInput.value = '';
+          customTagsInput.value = '';
+
+        } catch (error) {
+          console.error('Errore chiamata API:', error);
+          errorMessage.value = error.message;
+        } finally {
+          isLoading.value = false;
+          scrollToBottom();
+          document.getElementById('userInput')?.focus();
+        }
+      };
+
+      const generatePredefinedTrip = (prompt) => {
+        userInput.value = prompt;
+        processUserMessage();
+      };
+
+      const toggleCitySelection = (cityName) => {
+        const index = selectedCities.value.indexOf(cityName);
+        if (index > -1) {
+          selectedCities.value.splice(index, 1);
+        } else {
+          selectedCities.value.push(cityName);
+        }
+      };
+      const isCitySelected = (cityName) => selectedCities.value.includes(cityName);
+
+      const toggleStyleSelection = (styleName) => {
+        const index = selectedStyles.value.indexOf(styleName);
+        if (index > -1) {
+          selectedStyles.value.splice(index, 1);
+        } else {
+          selectedStyles.value.push(styleName);
+        }
+      };
+      const isStyleSelected = (styleName) => selectedStyles.value.includes(styleName);
+
+      const handleEnter = (event) => {
+        if (!event.shiftKey) {
+          event.preventDefault();
+          processUserMessage();
+        }
+      };
+
+      const autoResizeTextarea = (event) => {
+        const textarea = event.target;
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      };
+
+      onMounted(() => {
+        // Aggiunto il render della chat iniziale qui per coerenza
+        const chatboxContainer = document.getElementById('chatbox');
+        const renderVueMessages = () => {
+          chatboxContainer.innerHTML = ''; // Pulisce
+          displayMessages.forEach(message => {
+            // Questo è un trucco, normalmente useresti componenti Vue
+            // per renderizzare, ma per questo esempio dinamico funziona.
+            let messageEl;
+            if (message.sender === 'user') {
+              messageEl = document.createElement('div');
+              messageEl.className = 'message user-message';
+              messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
+            } else { // bot
+              messageEl = document.createElement('div');
+              messageEl.className = 'message bot-message';
+              messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
+            }
+            chatboxContainer.appendChild(messageEl);
+          });
           scrollToBottom();
         };
+        renderVueMessages(); // Render iniziale
 
-        const formatMessage = (text) => {
-          if (typeof text !== 'string') return '';
-          return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
-        };
+        const textarea = document.getElementById('userInput');
+        if (textarea) {
+          textarea.addEventListener('input', autoResizeTextarea);
+          textarea.focus();
+        }
+      });
 
-        const tryParseJSON = (jsonString) => {
-          try {
-            const o = JSON.parse(jsonString);
-            if (o && typeof o === "object") { return o; }
-          }
-          catch (e) { }
-          return false;
-        };
-
-        // --- MODIFICATO: La funzione principale ora gestisce tutti gli input ---
-        const processUserMessage = async () => {
-          const messageText = userInput.value.trim();
-          if (!canSendMessage.value || isLoading.value) return;
-
-          // --- NUOVO: Legge e processa i valori dai nuovi box di testo ---
-          const customCities = customCitiesInput.value.trim().split(',').map(c => c.trim()).filter(c => c);
-          const customTags = customTagsInput.value.trim().split(',').map(t => t.trim()).filter(t => t);
-
-          // Combina e rimuove duplicati
-          const finalCities = [...new Set([...selectedCities.value, ...customCities])];
-          const finalTags = [...new Set([...selectedStyles.value, ...customTags])];
-
-          let userQueryText = messageText;
-
-          // Se non c'è testo nel box principale, crea un messaggio di contesto per l'utente
-          if (!userQueryText && (finalCities.length > 0 || finalTags.length > 0)) {
-            let contextParts = [];
-            if (finalCities.length > 0) contextParts.push(`città: ${finalCities.join(', ')}`);
-            if (finalTags.length > 0) contextParts.push(`interessi: ${finalTags.join(', ')}`);
-            userQueryText = `Crea un itinerario considerando ${contextParts.join(' e ')}.`;
-          }
-
-          addMessageToDisplay({ text: userQueryText, sender: 'user' });
-          conversationHistory.value.push(userQueryText);
-
-          userInput.value = ''; // Pulisce solo il box principale
-          isLoading.value = true;
-          errorMessage.value = '';
-          autoResizeTextarea({ target: document.getElementById('userInput') });
-
-          try {
-            const response = await fetch(API_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                messages: conversationHistory.value,
-                cities: finalCities, // Invia i dati combinati
-                tags: finalTags,     // Invia i dati combinati
-              }),
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json().catch(() => ({}));
-              throw new Error(errorData.detail || `Errore API: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const botResponseText = data.response || "Scusa, non sono riuscito a elaborare una risposta.";
-            const structuredData = tryParseJSON(botResponseText);
-
-            if (structuredData) {
-              addMessageToDisplay({ text: structuredData, sender: 'bot', type: 'structured' });
-            } else {
-              addMessageToDisplay({ text: botResponseText, sender: 'bot', type: 'text' });
-            }
-
-            conversationHistory.value.push(botResponseText);
-
-            // --- NUOVO: Pulisce tutti gli input dopo l'invio ---
-            selectedCities.value = [];
-            selectedStyles.value = [];
-            customCitiesInput.value = '';
-            customTagsInput.value = '';
-
-          } catch (error) {
-            console.error('Errore chiamata API:', error);
-            errorMessage.value = error.message;
-          } finally {
-            isLoading.value = false;
-            scrollToBottom();
-            document.getElementById('userInput')?.focus();
-          }
-        };
-
-        const generatePredefinedTrip = (prompt) => {
-          userInput.value = prompt;
-          processUserMessage();
-        };
-
-        const toggleCitySelection = (cityName) => {
-          const index = selectedCities.value.indexOf(cityName);
-          if (index > -1) {
-            selectedCities.value.splice(index, 1);
-          } else {
-            selectedCities.value.push(cityName);
-          }
-        };
-        const isCitySelected = (cityName) => selectedCities.value.includes(cityName);
-
-        const toggleStyleSelection = (styleName) => {
-          const index = selectedStyles.value.indexOf(styleName);
-          if (index > -1) {
-            selectedStyles.value.splice(index, 1);
-          } else {
-            selectedStyles.value.push(styleName);
-          }
-        };
-        const isStyleSelected = (styleName) => selectedStyles.value.includes(styleName);
-
-        const handleEnter = (event) => {
-          if (!event.shiftKey) {
-            event.preventDefault();
-            processUserMessage();
-          }
-        };
-
-        const autoResizeTextarea = (event) => {
-          const textarea = event.target;
-          textarea.style.height = 'auto';
-          textarea.style.height = `${textarea.scrollHeight}px`;
-        };
-
-        onMounted(() => {
-          // Aggiunto il render della chat iniziale qui per coerenza
-          const chatboxContainer = document.getElementById('chatbox');
-          const renderVueMessages = () => {
-            chatboxContainer.innerHTML = ''; // Pulisce
-            displayMessages.forEach(message => {
-              // Questo è un trucco, normalmente useresti componenti Vue
-              // per renderizzare, ma per questo esempio dinamico funziona.
-              let messageEl;
-              if (message.sender === 'user') {
-                messageEl = document.createElement('div');
-                messageEl.className = 'message user-message';
-                messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
-              } else { // bot
-                messageEl = document.createElement('div');
-                messageEl.className = 'message bot-message';
-                messageEl.innerHTML = `<p>${formatMessage(message.text)}</p>`;
-              }
-              chatboxContainer.appendChild(messageEl);
-            });
-            scrollToBottom();
-          };
-          renderVueMessages(); // Render iniziale
-
-          const textarea = document.getElementById('userInput');
-          if (textarea) {
-            textarea.addEventListener('input', autoResizeTextarea);
-            textarea.focus();
-          }
-        });
-
-        // Modificato per esporre le nuove variabili
-        return {
-          userInput, isLoading, errorMessage, displayMessages, chatboxEl,
-          processUserMessage, handleEnter, formatMessage, canSendMessage,
-          destinations, travelStyles, selectedCities, selectedStyles,
-          toggleCitySelection, isCitySelected,
-          toggleStyleSelection, isStyleSelected,
-          generatePredefinedTrip,
-          customCitiesInput, customTagsInput // Esponi le nuove variabili
-        };
-      }
-    }).mount('#app');
-  </script>
+      // Modificato per esporre le nuove variabili
+      return {
+        userInput, isLoading, errorMessage, displayMessages, chatboxEl,
+        processUserMessage, handleEnter, formatMessage, canSendMessage,
+        destinations, travelStyles, selectedCities, selectedStyles,
+        toggleCitySelection, isCitySelected,
+        toggleStyleSelection, isStyleSelected,
+        generatePredefinedTrip,
+        customCitiesInput, customTagsInput // Esponi le nuove variabili
+      };
+    }
+  }).mount('#app');
+</script>
 </body>
 
 </html>
