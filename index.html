@@ -215,7 +215,6 @@
           </li>
           <div class="input-group">
             <label for="customCities">Aggiungi città</label>
-            <!-- --- CHANGE 13: Added enterkeyhint attribute --- -->
             <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomCity" :disabled="isLoading" enterkeyhint="done">
           </div>
         </ul>
@@ -226,7 +225,6 @@
             </span>
           <div class="input-group">
             <label for="customTags">Aggiungi interessi</label>
-            <!-- --- CHANGE 13: Added enterkeyhint attribute --- -->
             <input type="text" id="customTags" v-model="customTagsInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomTag" :disabled="isLoading" enterkeyhint="done">
           </div>
         </div>
@@ -289,7 +287,6 @@
 </div>
 
 <script type="module">
-  // All JavaScript code remains unchanged.
   const { createApp, ref, reactive, nextTick, onMounted, computed, watch } = Vue;
 
   const API_URL = '/api/proxy/process';
@@ -470,12 +467,27 @@
           addMessageToDisplay({ text: `⚠️ ${errorMessage.value}`, sender: 'bot', type: 'text' });
         } finally {
           isLoading.value = false;
-          document.getElementById('userInput')?.focus();
+          // Only focus on desktop, mobile keyboard management is tricky.
+          if (window.innerWidth > 850) {
+            document.getElementById('userInput')?.focus();
+          }
         }
       };
 
+      // --- CHANGE 14: New function to focus the chat area on mobile ---
+      const focusOnChat = () => {
+        if (window.innerWidth <= 850) {
+          const contentArea = document.querySelector('.content-area');
+          if (contentArea) {
+            contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      };
+
+      // --- CHANGE 14: Updated function to call the new focus helper ---
       const generatePredefinedTrip = (prompt) => {
         userInput.value = prompt;
+        focusOnChat(); // Scroll to chat before sending message
         processUserMessage();
       };
 
