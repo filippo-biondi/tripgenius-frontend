@@ -141,20 +141,21 @@
           }
       }
 
-      /* --- CHANGE 9: Major mobile optimization styles --- */
       @media (max-width: 850px) {
           html, body {
-              height: auto; /* Allow natural scrolling on mobile */
+              height: auto;
               overflow: visible;
           }
           body { padding: 0; }
           #app {
-              height: 100vh; /* Use viewport height */
+              min-height: 100vh; /* Use min-height to allow content to expand */
+              height: auto;
               max-width: 100%;
-              padding: 0;
           }
           .app-container {
-              padding: 15px 15px 0 15px; /* Reduce bottom padding */
+              height: auto;
+              min-height: 100%;
+              padding: 15px 15px 0 15px;
               gap: 15px;
               border-radius: 0;
               border: none;
@@ -165,20 +166,23 @@
           .main-content {
               flex-direction: column;
               gap: 20px;
+              flex-grow: 1; /* Allow main content to take up space */
           }
 
-          /* The magic for re-ordering the layout! */
           .content-area {
-              order: 1; /* Show chat first */
+              order: 1;
+              min-height: 50vh; /* Ensure chat area has significant initial height */
           }
+
+          /* --- CHANGE 10: Allow sidebar to scroll with the page --- */
           .mockup-sidebar {
-              order: 2; /* Show sidebar second */
-              flex-shrink: 0; /* Prevent sidebar from being squished */
+              order: 2;
+              flex-shrink: 0;
+              overflow-y: visible; /* CRUCIAL: Disables the internal scrollbar */
           }
 
           #chatbox {
               padding: 15px;
-              min-height: 40vh; /* Ensure chat has a good initial height */
           }
           .additional-inputs { flex-direction: column; gap: 15px; }
       }
@@ -190,7 +194,7 @@
 <div id="app">
   <div class="app-container">
     <header class="app-header">
-      <h1><img src="/assets/logo.png" alt="Logo" class="header-icon">TripGenius</h1>
+      <h1><img src="/assets/map-icon.png" alt="Map Icon" class="header-icon">TripGenius</h1>
       <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
     </header>
     <div class="main-content">
