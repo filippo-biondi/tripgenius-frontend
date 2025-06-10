@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   const baseUrl = process.env.BACKEND_URL
   const targetPath = req.url.replace(/^\/api\/proxy/, '')
   const targetUrl = `${baseUrl}${targetPath}`
-  console.log(`req: ${req}`)
+  console.log(`req: ${req.body}`)
 
   const response = await fetch(targetUrl, {
     method: req.method,
