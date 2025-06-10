@@ -49,7 +49,7 @@
       .mockup-sidebar h3:not(:first-child) { margin-top: 25px; }
       .mockup-item-list { list-style-type: none; }
       .mockup-item-list li { background-color: var(--surface-color); padding: 10px 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.2s ease; font-weight: 500; border-left: 4px solid transparent; }
-      .mockup-item-list li:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-left-color: var(--secondary-color); }
+
       .mockup-item-list li.selected {
           background: var(--secondary-color);
           color: white;
@@ -58,7 +58,7 @@
       }
       .mockup-item-list li.selected .icon, .mockup-item-list li.selected small { color: white; }
       .travel-styles .style-tag { display: inline-block; background-color: #f0f0f0; border: 1px solid var(--border-color); color: var(--text-color); padding: 6px 12px; border-radius: 20px; font-size: 0.9em; margin-right: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease; }
-      .travel-styles .style-tag:hover { background-color: #EAEAEA; transform: translateY(-2px); }
+
       .travel-styles .style-tag.selected {
           background: var(--primary-color);
           color: white;
@@ -146,6 +146,19 @@
           }
       }
 
+      /* --- CHANGE 15: Isolate hover effects to devices that support hover --- */
+      @media (hover: hover) and (pointer: fine) {
+          .mockup-item-list li:hover {
+              transform: translateX(5px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              border-left-color: var(--secondary-color);
+          }
+          .travel-styles .style-tag:hover {
+              background-color: #EAEAEA;
+              transform: translateY(-2px);
+          }
+      }
+
       @media (max-width: 850px) {
           html, body {
               height: auto;
@@ -207,7 +220,7 @@
     </header>
     <div class="main-content">
       <aside class="mockup-sidebar">
-        <!-- Sidebar HTML -->
+        <!-- Sidebar HTML remains unchanged -->
         <h3><span class="icon">📍</span>Pianifica la tua Visita</h3>
         <ul class="mockup-item-list">
           <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)" :class="{ 'selected': isCitySelected(dest.name) }">
@@ -287,6 +300,7 @@
 </div>
 
 <script type="module">
+  // All JavaScript code remains unchanged from the previous version.
   const { createApp, ref, reactive, nextTick, onMounted, computed, watch } = Vue;
 
   const API_URL = '/api/proxy/process';
@@ -474,7 +488,6 @@
         }
       };
 
-      // --- CHANGE 14: New function to focus the chat area on mobile ---
       const focusOnChat = () => {
         if (window.innerWidth <= 850) {
           const contentArea = document.querySelector('.content-area');
@@ -484,7 +497,6 @@
         }
       };
 
-      // --- CHANGE 14: Updated function to call the new focus helper ---
       const generatePredefinedTrip = (prompt) => {
         userInput.value = prompt;
         focusOnChat(); // Scroll to chat before sending message
