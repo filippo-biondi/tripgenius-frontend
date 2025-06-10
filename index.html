@@ -24,7 +24,7 @@
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body {
           height: 100%;
-          overflow: hidden;
+          overflow: hidden; /* Prevent body scrollbar on desktop */
       }
       body { font-family: var(--font-family-sans); background-color: var(--background-color); background-size: cover; background-position: center; color: var(--text-color); display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
 
@@ -107,18 +107,13 @@
       .input-group label { font-size: 0.9em; color: var(--text-color); margin-bottom: 5px; font-weight: 500; }
       .input-group input { padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95em; transition: all 0.2s ease; background-color: var(--surface-color); }
       .input-group input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2); }
-
-      /* --- CHANGE 11: New wrapper for input elements --- */
-      .chat-input-container {
-          flex-shrink: 0;
-      }
-      #input-area { display: flex; gap: 10px; align-items: flex-end; }
+      #input-area { display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
       #userInput { flex-grow: 1; padding: 12px 20px; border: 1px solid var(--border-color); border-radius: 25px; resize: none; font-family: inherit; font-size: 1em; transition: box-shadow 0.2s ease; min-height: 50px; }
       #userInput:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(140, 91, 66, 0.2); }
       #sendButton { background-color: var(--secondary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.3em; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
       #sendButton:hover { background-color: #388E3C; transform: scale(1.05); }
       #sendButton:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: scale(1); }
-      .status-indicators { min-height: 25px; text-align: center; margin-top: 10px; }
+      .status-indicators { min-height: 25px; text-align: center; margin-top: 10px; flex-shrink: 0; }
       .loading-message {
           display: flex;
           align-items: center;
@@ -146,20 +141,22 @@
           }
       }
 
-      /* --- CHANGE 11: Updated Mobile Layout --- */
+      /* --- CHANGE 11: Final mobile layout refinement --- */
       @media (max-width: 850px) {
           html, body {
-              height: 100%; /* Return to fixed viewport height */
-              overflow: hidden;
+              height: auto;
+              overflow: visible;
           }
           body { padding: 0; }
           #app {
-              height: 100%;
+              min-height: 100vh;
+              height: auto;
               max-width: 100%;
           }
           .app-container {
-              height: 100%;
-              padding: 15px;
+              height: auto;
+              min-height: 100%;
+              padding: 15px; /* Added back bottom padding for page scroll spacing */
               gap: 15px;
               border-radius: 0;
               border: none;
@@ -169,26 +166,28 @@
           .app-header p { font-size: 1em; }
           .main-content {
               flex-direction: column;
-              gap: 15px;
-              min-height: 0; /* Important for flex children */
+              gap: 20px;
+              flex-grow: 1;
           }
 
           .content-area {
-              order: 1; /* Chat first */
-              height: 65vh; /* Dedicate ~2/3 of viewport height to chat area */
-              flex-shrink: 0; /* Prevent this area from shrinking */
+              order: 1;
+              flex-grow: 0; /* Do not allow content-area to grow */
+          }
+
+          .chat-interface {
+              height: 75vh; /* Set chat container to a fixed 3/4 screen height */
           }
 
           .mockup-sidebar {
-              order: 2; /* Sidebar second */
-              flex-grow: 1; /* Fills the remaining space at the bottom */
-              min-height: 0; /* Allows it to shrink and grow properly */
-              overflow-y: auto; /* Make the sidebar itself scrollable */
+              order: 2;
+              flex-shrink: 0;
+              overflow-y: visible; /* Ensure sidebar content flows into the page */
           }
 
           #chatbox {
               padding: 15px;
-              margin-bottom: 15px;
+              /* It will now scroll internally within the 75vh parent */
           }
           .additional-inputs { flex-direction: column; gap: 15px; }
       }
@@ -269,17 +268,14 @@
               </template>
             </div>
           </div>
-          <!-- --- CHANGE 11: Wrapped input and status in a new container --- -->
-          <div class="chat-input-container">
-            <div id="input-area">
-              <textarea id="userInput" placeholder="Descrivi qui il tuo viaggio ideale..." v-model="userInput" @keypress.enter.prevent="handleEnter" @input="autoResizeTextarea" :disabled="isLoading" rows="1"></textarea>
-              <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
-                <span>➤</span>
-              </button>
-            </div>
-            <div class="status-indicators">
-              <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
-            </div>
+          <div id="input-area">
+            <textarea id="userInput" placeholder="Descrivi qui il tuo viaggio ideale..." v-model="userInput" @keypress.enter.prevent="handleEnter" @input="autoResizeTextarea" :disabled="isLoading" rows="1"></textarea>
+            <button id="sendButton" @click="processUserMessage" :disabled="isLoading || !canSendMessage">
+              <span>➤</span>
+            </button>
+          </div>
+          <div class="status-indicators">
+            <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
           </div>
         </div>
       </main>
