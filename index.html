@@ -114,7 +114,6 @@
       #sendButton:hover { background-color: #388E3C; transform: scale(1.05); }
       #sendButton:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: scale(1); }
 
-      /* --- CHANGE 12: Removed min-height to eliminate empty space --- */
       .status-indicators {
           text-align: center;
           margin-top: 5px;
@@ -203,13 +202,12 @@
 <div id="app">
   <div class="app-container">
     <header class="app-header">
-      <!-- --- CHANGE 12: Updated image source and alt text --- -->
       <h1><img src="/assets/logo.png" alt="Logo" class="header-icon">TripGenius</h1>
       <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
     </header>
     <div class="main-content">
       <aside class="mockup-sidebar">
-        <!-- Sidebar HTML remains unchanged -->
+        <!-- Sidebar HTML -->
         <h3><span class="icon">📍</span>Pianifica la tua Visita</h3>
         <ul class="mockup-item-list">
           <li v-for="dest in destinations" :key="dest.name" @click="toggleCitySelection(dest.name)" :class="{ 'selected': isCitySelected(dest.name) }">
@@ -217,7 +215,8 @@
           </li>
           <div class="input-group">
             <label for="customCities">Aggiungi città</label>
-            <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomCity" :disabled="isLoading">
+            <!-- --- CHANGE 13: Added enterkeyhint attribute --- -->
+            <input type="text" id="customCities" v-model="customCitiesInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomCity" :disabled="isLoading" enterkeyhint="done">
           </div>
         </ul>
         <h3><span class="icon">🧭</span>Stile di Viaggio</h3>
@@ -227,7 +226,8 @@
             </span>
           <div class="input-group">
             <label for="customTags">Aggiungi interessi</label>
-            <input type="text" id="customTags" v-model="customTagsInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomTag" :disabled="isLoading">
+            <!-- --- CHANGE 13: Added enterkeyhint attribute --- -->
+            <input type="text" id="customTags" v-model="customTagsInput" placeholder="Aggiungi e premi Invio..." @keydown.enter.prevent="addCustomTag" :disabled="isLoading" enterkeyhint="done">
           </div>
         </div>
         <h3><span class="icon">💡</span>Idee di Itinerario</h3>
@@ -289,7 +289,7 @@
 </div>
 
 <script type="module">
-  // All JavaScript code remains unchanged from the previous version.
+  // All JavaScript code remains unchanged.
   const { createApp, ref, reactive, nextTick, onMounted, computed, watch } = Vue;
 
   const API_URL = '/api/proxy/process';
