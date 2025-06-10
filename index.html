@@ -113,7 +113,13 @@
       #sendButton { background-color: var(--secondary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.3em; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
       #sendButton:hover { background-color: #388E3C; transform: scale(1.05); }
       #sendButton:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: scale(1); }
-      .status-indicators { min-height: 25px; text-align: center; margin-top: 10px; flex-shrink: 0; }
+
+      /* --- CHANGE 12: Removed min-height to eliminate empty space --- */
+      .status-indicators {
+          text-align: center;
+          margin-top: 5px;
+      }
+
       .loading-message {
           display: flex;
           align-items: center;
@@ -141,7 +147,6 @@
           }
       }
 
-      /* --- CHANGE 11: Final mobile layout refinement --- */
       @media (max-width: 850px) {
           html, body {
               height: auto;
@@ -156,7 +161,7 @@
           .app-container {
               height: auto;
               min-height: 100%;
-              padding: 15px; /* Added back bottom padding for page scroll spacing */
+              padding: 15px;
               gap: 15px;
               border-radius: 0;
               border: none;
@@ -172,22 +177,21 @@
 
           .content-area {
               order: 1;
-              flex-grow: 0; /* Do not allow content-area to grow */
+              flex-grow: 0;
           }
 
           .chat-interface {
-              height: 75vh; /* Set chat container to a fixed 3/4 screen height */
+              height: 75vh;
           }
 
           .mockup-sidebar {
               order: 2;
               flex-shrink: 0;
-              overflow-y: visible; /* Ensure sidebar content flows into the page */
+              overflow-y: visible;
           }
 
           #chatbox {
               padding: 15px;
-              /* It will now scroll internally within the 75vh parent */
           }
           .additional-inputs { flex-direction: column; gap: 15px; }
       }
@@ -199,7 +203,8 @@
 <div id="app">
   <div class="app-container">
     <header class="app-header">
-      <h1><img src="/assets/map-icon.png" alt="Map Icon" class="header-icon">TripGenius</h1>
+      <!-- --- CHANGE 12: Updated image source and alt text --- -->
+      <h1><img src="/assets/logo.png" alt="Logo" class="header-icon">TripGenius</h1>
       <p>Scopri itinerari e attività attraverso l'analisi di migliaia di esperienze di viaggio.</p>
     </header>
     <div class="main-content">
